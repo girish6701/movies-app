@@ -1,23 +1,74 @@
 import React, { Component } from "react";
-import { movies } from "../demo-data";
+import axios from "axios";
 
 export default class MoviesList extends Component {
   constructor() {
     super();
     this.state = {
       hoverID: "",
+      pageArr: [1],
+      movies: [],
+      currPage: 1,
     };
   }
 
+  async componentDidMount() {
+    // const res = await axios.get(
+    //   "https://api.themoviedb.org/3/movie/popular?api_key=346d28f974e0de61538c2f2adc4796fe&language=en-US&page=1"
+    // );
+    // let movieData = res.data;
+    // this.setState({ movies: [...movieData.results] });
+    this.handleMovies();
+  }
+
+  handleMovies = async (page) => {
+    const res = await axios.get(
+      `https://api.themoviedb.org/3/movie/popular?api_key=346d28f974e0de61538c2f2adc4796fe&language=en-US&page=${
+        page ? page : this.state.currPage
+      }`
+    );
+    let movieData = res.data;
+    this.setState({ movies: [...movieData.results] });
+  };
+
+  handleNext = () => {
+    let tempArr = [];
+    for (let i = 1; i <= this.state.pageArr.length + 1; i++) {
+      tempArr.push(i);
+    }
+
+    this.setState(
+      {
+        currPage: tempArr.length,
+        pageArr: [...tempArr],
+      },
+      this.handleMovies
+    );
+  };
+
+  handlePrevious = () => {
+    if (this.state.currPage != 1) {
+      this.setState(
+        {
+          currPage: this.state.currPage - 1,
+        },
+        this.handleMovies
+      );
+    }
+  };
+
+  handlePageClick = (e) => {
+    this.handleMovies(e.currentTarget.textContent);
+  };
+
   render() {
-    const moviesArr = movies.results;
     return (
       <div>
-        <h2 className="text-center" style={{ marginTop: "1.5rem" }}>
+        <h1 className="text-center" style={{ marginTop: "1.5rem" }}>
           <strong>Trending</strong>
-        </h2>
+        </h1>
         <div className="movie-list">
-          {moviesArr.map((movie) => {
+          {this.state.movies.map((movie) => {
             return (
               <div
                 className="card movie-card"
@@ -25,7 +76,7 @@ export default class MoviesList extends Component {
                 onMouseLeave={() => this.setState({ hoverID: "" })}
               >
                 <img
-                  src="https://marketplace.canva.com/EAE4sZqehD4/1/0/1131w/canva-gray-%26-black-monochrome-blind-forest-movie-present-poster-PRZ-uOOwgf0.jpg"
+                  src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
                   className="card-img-top movie-img"
                   alt="..."
                 />
@@ -47,27 +98,21 @@ export default class MoviesList extends Component {
           <nav aria-label="Page navigation example">
             <ul className="pagination">
               <li className="page-item">
-                <a className="page-link" href="#">
+                <a className="page-link" onClick={this.handlePrevious}>
                   Previous
                 </a>
               </li>
+              {this.state.pageArr.map((page) => {
+                return (
+                  <li className="page-item">
+                    <a className="page-link" onClick={this.handlePageClick}>
+                      {page}
+                    </a>
+                  </li>
+                );
+              })}
               <li className="page-item">
-                <a className="page-link" href="#">
-                  1
-                </a>
-              </li>
-              <li className="page-item">
-                <a className="page-link" href="#">
-                  2
-                </a>
-              </li>
-              <li className="page-item">
-                <a className="page-link" href="#">
-                  3
-                </a>
-              </li>
-              <li className="page-item">
-                <a className="page-link" href="#">
+                <a className="page-link" onClick={this.handleNext}>
                   Next
                 </a>
               </li>

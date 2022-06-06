@@ -71,3 +71,17 @@
   justify-content: center;
   margin-top: 1rem;
 }
+
+a:hover {
+  cursor: pointer;
+}
+
+.container {
+  margin-top: 1.6rem;
+}
+
+.favourite-img {
+  width: 5rem;
+  height: 3rem;
+  margin-right: 1rem;
+}
