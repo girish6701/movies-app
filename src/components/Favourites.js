@@ -6,7 +6,14 @@ export default class Favourites extends Component {
     super();
     this.state = {
       activeGenre: "All Genres",
+      favouriteMovies: [],
+      genre: [],
     };
+  }
+
+  componentDidMount() {
+    let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    this.setState({ favouriteMovies: data });
   }
 
   handleGenre = (e) => {
@@ -39,7 +46,7 @@ export default class Favourites extends Component {
     };
 
     let tempArr = [];
-    moviesArr.map((movie) => {
+    this.state.favouriteMovies.map((movie) => {
       if (!tempArr.includes(genreids[movie.genre_ids[0]])) {
         tempArr.push(genreids[movie.genre_ids[0]]);
       }
@@ -93,12 +100,12 @@ export default class Favourites extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {moviesArr.map((movie) => {
+                    {this.state.favouriteMovies.map((movie) => {
                       return (
                         <tr>
                           <th scope="row">
                             <img
-                              src="https://img.fruugo.com/product/0/70/99799700_max.jpg"
+                              src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
                               className="favourite-img"
                             />
                             {movie.title}

@@ -9,6 +9,7 @@ export default class MoviesList extends Component {
       pageArr: [1],
       movies: [],
       currPage: 1,
+      favourites: [],
     };
   }
 
@@ -19,6 +20,7 @@ export default class MoviesList extends Component {
     // let movieData = res.data;
     // this.setState({ movies: [...movieData.results] });
     this.handleMovies();
+    this.handleFavouriteState();
   }
 
   handleMovies = async (page) => {
@@ -61,6 +63,23 @@ export default class MoviesList extends Component {
     this.handleMovies(e.currentTarget.textContent);
   };
 
+  handleFavourites = (movieObj) => {
+    let oldData = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    if (this.state.favourites.includes(movieObj.id)) {
+      oldData = oldData.filter((movie) => movie.id != movieObj.id);
+    } else {
+      oldData.push(movieObj);
+    }
+    localStorage.setItem("favourite-movies", JSON.stringify(oldData));
+    this.handleFavouriteState();
+  };
+
+  handleFavouriteState = () => {
+    let oldData = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    oldData = oldData.map((movie) => movie.id);
+    this.setState({ favourites: [...oldData] });
+  };
+
   render() {
     return (
       <div>
@@ -84,9 +103,16 @@ export default class MoviesList extends Component {
                   <h5 className="card-title">{movie.title}</h5>
                 </div>
                 {this.state.hoverID == movie.id && (
-                  <div className="btn-wrapper">
-                    <a href="#" className="btn btn-primary movie-btn">
-                      Add to Favourites
+                  <div
+                    className="btn-wrapper"
+                    onClick={() => {
+                      this.handleFavourites(movie);
+                    }}
+                  >
+                    <a className="btn btn-primary movie-btn">
+                      {this.state.favourites.includes(movie.id)
+                        ? "Remove from Favourites"
+                        : "Add to Favourites"}
                     </a>
                   </div>
                 )}
