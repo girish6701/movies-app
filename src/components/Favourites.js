@@ -2,6 +2,17 @@ import React, { Component } from "react";
 import { movies } from "../demo-data";
 
 export default class Favourites extends Component {
+  constructor() {
+    super();
+    this.state = {
+      activeGenre: "All Genres",
+    };
+  }
+
+  handleGenre = (e) => {
+    this.setState({ activeGenre: e.currentTarget.textContent });
+  };
+
   render() {
     let moviesArr = movies.results;
 
@@ -33,7 +44,7 @@ export default class Favourites extends Component {
         tempArr.push(genreids[movie.genre_ids[0]]);
       }
     });
-    tempArr.unshift("All Generes");
+    tempArr.unshift("All Genres");
 
     return (
       <div>
@@ -42,8 +53,26 @@ export default class Favourites extends Component {
             <div className="col-3">
               <div className="list-cont">
                 <ul className="list-group">
-                  {tempArr.map((genere) => {
-                    return <li className="list-group-item">{genere}</li>;
+                  {tempArr.map((genre) => {
+                    if (this.state.activeGenre == genre) {
+                      return (
+                        <li
+                          onClick={this.handleGenre}
+                          className="list-group-item active-genre"
+                        >
+                          {genre}
+                        </li>
+                      );
+                    } else {
+                      return (
+                        <li
+                          onClick={this.handleGenre}
+                          className="list-group-item genre"
+                        >
+                          {genre}
+                        </li>
+                      );
+                    }
                   })}
                 </ul>
               </div>
