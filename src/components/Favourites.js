@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { movies } from "../demo-data";
 
 export default class Favourites extends Component {
   constructor() {
@@ -118,7 +117,7 @@ export default class Favourites extends Component {
     });
     this.setState({ favouriteMovies: [...data] });
   };
-  
+
   handleDelete = (e) => {
     let id = e.currentTarget.dataset["id"];
     let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
