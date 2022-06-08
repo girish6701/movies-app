@@ -95,3 +95,8 @@ a:hover {
   color: white;
   font-weight: bold;
 }
+
+i {
+  margin: 0 2px;
+  cursor: pointer;
+}

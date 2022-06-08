@@ -7,22 +7,13 @@ export default class Favourites extends Component {
     this.state = {
       activeGenre: "All Genres",
       favouriteMovies: [],
-      genre: [],
+      genres: [],
+      searchText: "",
     };
   }
 
   componentDidMount() {
     let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
-    this.setState({ favouriteMovies: data });
-  }
-
-  handleGenre = (e) => {
-    this.setState({ activeGenre: e.currentTarget.textContent });
-  };
-
-  render() {
-    let moviesArr = movies.results;
-
     let genreids = {
       28: "Action",
       12: "Adventure",
@@ -46,12 +37,120 @@ export default class Favourites extends Component {
     };
 
     let tempArr = [];
-    this.state.favouriteMovies.map((movie) => {
+    data.map((movie) => {
       if (!tempArr.includes(genreids[movie.genre_ids[0]])) {
         tempArr.push(genreids[movie.genre_ids[0]]);
       }
     });
     tempArr.unshift("All Genres");
+    this.setState({ favouriteMovies: [...data], genres: [...tempArr] });
+  }
+
+  handleGenre = (e) => {
+    let genreids = {
+      28: "Action",
+      12: "Adventure",
+      16: "Animation",
+      35: "Comedy",
+      80: "Crime",
+      99: "Documentary",
+      18: "Drama",
+      10751: "Family",
+      14: "Fantasy",
+      36: "History",
+      27: "Horror",
+      10402: "Music",
+      9648: "Mystery",
+      10749: "Romance",
+      878: "Sci-Fi",
+      10770: "TV",
+      53: "Thriller",
+      10752: "War",
+      37: "Western",
+    };
+    let genreVal = e.currentTarget.textContent;
+    this.setState({ activeGenre: genreVal });
+    let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    if (genreVal === "All Genres") {
+      this.setState({ favouriteMovies: [...data] });
+      return;
+    }
+    let temp = data.filter((movie) => {
+      return genreids[movie.genre_ids[0]] == genreVal;
+    });
+    this.setState({ favouriteMovies: [...temp] });
+  };
+
+  handleSearch = (e) => {
+    let searchVal = e.currentTarget.value;
+    this.setState({ searchText: searchVal }, this.filterSearch);
+  };
+
+  filterSearch = () => {
+    console.log(this.state.searchText);
+    let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    let temp = [];
+    if (this.state.searchText === "") {
+      temp = [...data];
+      console.log(temp);
+    } else {
+      temp = data.filter((movie) => {
+        let title = movie.original_title.toLowerCase();
+        return title.includes(this.state.searchText.toLowerCase());
+      });
+      console.log(temp);
+    }
+    this.setState({ favouriteMovies: [...temp] });
+  };
+
+  sortDesc = (criteria) => {
+    let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    data.sort(function (objA, objB) {
+      return objB[criteria] - objA[criteria];
+    });
+    this.setState({ favouriteMovies: [...data] });
+  };
+
+  sortAsc = (criteria) => {
+    let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    data.sort(function (objA, objB) {
+      return objA[criteria] - objB[criteria];
+    });
+    this.setState({ favouriteMovies: [...data] });
+  };
+  
+  handleDelete = (e) => {
+    let id = e.currentTarget.dataset["id"];
+    let data = JSON.parse(localStorage.getItem("favourite-movies")) || [];
+    data = data.filter((movie) => {
+      return movie.id != id;
+    });
+    this.setState({ favouriteMovies: data });
+    localStorage.setItem("favourite-movies", JSON.stringify(data));
+  };
+
+  render() {
+    let genreids = {
+      28: "Action",
+      12: "Adventure",
+      16: "Animation",
+      35: "Comedy",
+      80: "Crime",
+      99: "Documentary",
+      18: "Drama",
+      10751: "Family",
+      14: "Fantasy",
+      36: "History",
+      27: "Horror",
+      10402: "Music",
+      9648: "Mystery",
+      10749: "Romance",
+      878: "Sci-Fi",
+      10770: "TV",
+      53: "Thriller",
+      10752: "War",
+      37: "Western",
+    };
 
     return (
       <div>
@@ -60,7 +159,7 @@ export default class Favourites extends Component {
             <div className="col-3">
               <div className="list-cont">
                 <ul className="list-group">
-                  {tempArr.map((genre) => {
+                  {this.state.genres.map((genre) => {
                     if (this.state.activeGenre == genre) {
                       return (
                         <li
@@ -86,7 +185,13 @@ export default class Favourites extends Component {
             </div>
             <div className="col-9">
               <div className="row">
-                <input type="text" className="input-group-text col" />
+                <input
+                  type="text"
+                  className="input-group-text col"
+                  onChange={(e) => {
+                    this.handleSearch(e);
+                  }}
+                />
                 <input type="number" className="input-group-text col" />
               </div>
               <div className="row">
@@ -95,8 +200,36 @@ export default class Favourites extends Component {
                     <tr>
                       <th scope="col">Title</th>
                       <th scope="col">Genre</th>
-                      <th scope="col">Popularity</th>
-                      <th scope="col">Ratings</th>
+                      <th scope="col">
+                        <i
+                          className="fa-solid fa-caret-up"
+                          onClick={() => {
+                            this.sortDesc("popularity");
+                          }}
+                        ></i>
+                        Popularity
+                        <i
+                          className="fa-solid fa-caret-down"
+                          onClick={() => {
+                            this.sortAsc("popularity");
+                          }}
+                        ></i>
+                      </th>
+                      <th scope="col">
+                        <i
+                          className="fa-solid fa-caret-up"
+                          onClick={() => {
+                            this.sortDesc("vote_average");
+                          }}
+                        ></i>
+                        Ratings
+                        <i
+                          className="fa-solid fa-caret-down"
+                          onClick={() => {
+                            this.sortAsc("vote_average");
+                          }}
+                        ></i>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -114,7 +247,12 @@ export default class Favourites extends Component {
                           <td>{movie.popularity}</td>
                           <td>{movie.vote_average}</td>
                           <td>
-                            <button type="button" className="btn btn-danger">
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={this.handleDelete}
+                              data-id={movie.id}
+                            >
                               Delete
                             </button>
                           </td>
