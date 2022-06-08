@@ -185,13 +185,13 @@ export default class Favourites extends Component {
             <div className="col-9">
               <div className="row">
                 <input
+                  placeholder="Search"
                   type="text"
                   className="input-group-text col"
                   onChange={(e) => {
                     this.handleSearch(e);
                   }}
                 />
-                <input type="number" className="input-group-text col" />
               </div>
               <div className="row">
                 <table className="table">
@@ -261,35 +261,6 @@ export default class Favourites extends Component {
                   </tbody>
                 </table>
               </div>
-              <nav aria-label="Page navigation example">
-                <ul className="pagination">
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      Previous
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      1
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      2
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      3
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      Next
-                    </a>
-                  </li>
-                </ul>
-              </nav>
             </div>
           </div>
         </div>
